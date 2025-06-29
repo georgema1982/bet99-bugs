@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class BugService {
 
     private static final List<BugDto> bugDtos = new ArrayList<>();
@@ -40,5 +43,9 @@ public class BugService {
 
     public List<BugDto> getAllBugDtos() {
         return Collections.unmodifiableList(bugDtos);
+    }
+
+    public void addBugDto(BugDto bugDto) {
+        bugDtos.add(bugDto);
     }
 }
