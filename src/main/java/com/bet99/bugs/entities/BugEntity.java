@@ -8,7 +8,7 @@ import com.bet99.bugs.models.Severity;
 import com.bet99.bugs.models.Status;
 
 @Entity
-public class Bug {
+public class BugEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
