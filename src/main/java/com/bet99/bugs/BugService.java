@@ -26,14 +26,14 @@ public class BugService {
         this.bugMapper = bugMapper;
     }
 
-    public List<BugDto> getAllBugDtos() {
+    public List<BugDto> getAllBugs() {
         return bugRepository.findAll()
                 .stream()
                 .map(bugMapper::toDto)
                 .toList();
     }
 
-    public BugDto addBugDto(BugDto bugDto) {
+    public BugDto addBug(BugDto bugDto) {
         BugEntity entity = bugMapper.toEntity(bugDto);
         BugEntity savedEntity = bugRepository.save(entity);
         return bugMapper.toDto(savedEntity);

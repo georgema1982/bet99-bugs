@@ -7,25 +7,30 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 import com.bet99.bugs.models.Severity;
 import com.bet99.bugs.models.Status;
 
 @Entity
+@Table(name = "bug")
 public class BugEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String bugTitle;
+
+    @Column(nullable = false)
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private Severity severity;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private Status status;
 
     // Getters and setters

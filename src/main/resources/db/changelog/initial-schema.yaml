@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: 1751262588140-1
+    id: 1751313068435-1
     author: George (generated)
     changes:
     - createTable:
@@ -15,14 +15,22 @@ databaseChangeLog:
         - column:
             name: bug_title
             type: VARCHAR(255)
+            constraints:
+              nullable: false
         - column:
             name: description
             type: VARCHAR(255)
+            constraints:
+              nullable: false
         - column:
             name: severity
-            type: TINYINT(3)
+            type: VARCHAR(20)
+            constraints:
+              nullable: false
         - column:
             name: status
-            type: TINYINT(3)
-        tableName: bug_entity
+            type: VARCHAR(20)
+            constraints:
+              nullable: false
+        tableName: bug
 

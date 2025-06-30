@@ -9,6 +9,12 @@
 </head>
 <body>
     <div class="container mt-5">
+        <!-- Success alert placeholder -->
+        <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert" style="display:none;">
+            Bug added successfully!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
         <h1 class="mb-4">Welcome to the Bug Tracker</h1>
         <p class="lead">This is the home page of the Bug Tracker application.</p>
 
@@ -17,36 +23,38 @@
             Add Bug
         </button>
 
-        <c:if test="${not empty bugs}">
-            <h2 class="mt-5">Recently Edited Bugs</h2>
-            <table class="table table-striped table-bordered mt-3">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Severity</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="bug" items="${bugs}">
-                        <tr>
-                            <td>${bug.id}</td>
-                            <td>${bug.bugTitle}</td>
-                            <td>${bug.description}</td>
-                            <td>${bug.severity}</td>
-                            <td>${bug.status}</td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </c:if>
-
-        <c:if test="${empty bugs}">
-            <div class="alert alert-info mt-4">No recently edited bugs found.</div>
-        </c:if>
+        <h2 class="mt-5">Recently Edited Bugs</h2>
+        <table class="table table-striped table-bordered mt-3" id="bugsTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be dynamically inserted here -->
+            </tbody>
+            <tfoot>
+                <tr id="noBugsMsg" style="display:none;">
+                    <td colspan="5" class="alert alert-info m-0 text-center">No recently edited bugs found.</td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
+
+    <!-- Hidden row template -->
+    <template id="bugRowTemplate">
+        <tr>
+            <td class="bug-id"></td>
+            <td class="bug-title"></td>
+            <td class="bug-description"></td>
+            <td class="bug-severity"></td>
+            <td class="bug-status"></td>
+        </tr>
+    </template>
 
     <!-- Add Bug Modal -->
     <div class="modal fade" id="addBugModal" tabindex="-1" aria-labelledby="addBugModalLabel" aria-hidden="true">
@@ -101,7 +109,43 @@
     <!-- Add jQuery CDN for AJAX (if not already included) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
+    function createBugRow(bug) {
+        const row = $($('#bugRowTemplate').prop('content')).clone();
+        row.find('.bug-id').text(bug.id ? bug.id : '');
+        row.find('.bug-title').text(bug.bugTitle);
+        row.find('.bug-description').text(bug.description);
+        row.find('.bug-severity').text(bug.severity);
+        row.find('.bug-status').text(bug.status);
+        return row;
+    }
+
+    function loadBugs() {
+        $.ajax({
+            url: '<c:url value="/api/bugs"/>',
+            type: 'GET',
+            success: function(bugs) {
+                $('#bugsTable tbody').empty();
+                if (bugs && bugs.length > 0) {
+                    $('#noBugsMsg').hide();
+                    bugs.forEach(function(bug) {
+                        $('#bugsTable tbody').append(createBugRow(bug));
+                    });
+                } else {
+                    $('#noBugsMsg').show();
+                }
+            },
+            error: function() {
+                $('#bugsTable tbody').empty();
+                $('#noBugsMsg').find('td').text('Failed to load bugs.').show();
+            }
+        });
+    }
+
     $(document).ready(function() {
+        // Load bugs on page load
+        loadBugs();
+
+        // Add bug form submit
         $('#addBugForm').on('submit', function(e) {
             e.preventDefault();
 
@@ -118,28 +162,12 @@
                 contentType: 'application/json',
                 data: JSON.stringify(bugData),
                 success: function(newBug) {
-                    // Hide modal
                     $('#addBugModal').modal('hide');
-                    // Reset form
                     $('#addBugForm')[0].reset();
-
-                    // Append new row to the table
-                    const newRow = `
-                        <tr>
-                            <td>${newBug.id ? newBug.id : ''}</td>
-                            <td>${newBug.bugTitle}</td>
-                            <td>${newBug.description}</td>
-                            <td>${newBug.severity}</td>
-                            <td>${newBug.status}</td>
-                        </tr>
-                    `;
-                    // If table exists, append. If not, create table.
-                    if ($('table tbody').length) {
-                        $('table tbody').append(newRow);
-                    } else {
-                        // If no table, create one (optional)
-                        // location.reload(); // fallback: reload page
-                    }
+                    $('#bugsTable tbody').append(createBugRow(newBug));
+                    $('#noBugsMsg').hide();
+                    // Show success alert
+                    $('#successAlert').show();
                 },
                 error: function() {
                     alert('Failed to add bug. Please try again.');
