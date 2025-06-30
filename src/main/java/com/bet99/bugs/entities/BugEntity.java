@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Column;
 import com.bet99.bugs.models.Severity;
 import com.bet99.bugs.models.Status;
 
@@ -16,7 +19,13 @@ public class BugEntity {
 
     private String bugTitle;
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private Severity severity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private Status status;
 
     // Getters and setters
