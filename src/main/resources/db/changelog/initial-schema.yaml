@@ -1,0 +1,28 @@
+databaseChangeLog:
+- changeSet:
+    id: 1751262588140-1
+    author: George (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: BIGINT
+        - column:
+            name: bug_title
+            type: VARCHAR(255)
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            name: severity
+            type: TINYINT(3)
+        - column:
+            name: status
+            type: TINYINT(3)
+        tableName: bug_entity
+
