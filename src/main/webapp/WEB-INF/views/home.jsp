@@ -6,6 +6,8 @@
     <title>Home Page</title>
     <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Add this in your <head> to include Bootstrap Icons CDN if not already present -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
     <div class="container mt-5">
@@ -23,14 +25,14 @@
 
         <!-- Add Bug Button, Refresh Button, and Filter Button -->
         <div class="mb-3 d-flex gap-2 align-items-center">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBugModal">
-                Add Bug
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBugModal" title="Add Bug">
+                <i class="bi bi-plus-circle"></i>
             </button>
-            <button type="button" class="btn btn-secondary" id="refreshBugsBtn">
-                Refresh
+            <button type="button" class="btn btn-secondary" id="refreshBugsBtn" title="Refresh">
+                <i class="bi bi-arrow-clockwise"></i>
             </button>
-            <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse" id="filterBugsBtn">
-                Filter
+            <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse" id="filterBugsBtn" title="Filter">
+                <i class="bi bi-funnel"></i>
             </button>
         </div>
 
@@ -175,12 +177,16 @@
         $('#refreshBugsBtn').on('click', function() {
             $('#filterSeverity').val('');
             loadBugs();
+            // Hide the filter collapse if open
+            $('#filterCollapse').collapse('hide');
         });
 
         // Filter by severity when dropdown changes
         $('#filterSeverity').on('change', function() {
             const severity = $(this).val();
             loadBugs(severity);
+            // Hide the filter collapse after selection
+            $('#filterCollapse').collapse('hide');
         });
 
         // Add bug form submit
