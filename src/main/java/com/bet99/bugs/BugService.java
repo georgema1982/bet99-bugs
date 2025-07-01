@@ -26,11 +26,9 @@ public class BugService {
         this.bugMapper = bugMapper;
     }
 
-    public List<BugDto> getAllBugs() {
-        return bugRepository.findAll()
-                .stream()
-                .map(bugMapper::toDto)
-                .toList();
+    public List<BugDto> getBugs(Severity severity) {
+        return (severity == null ? bugRepository.findAll() : bugRepository.findBySeverity(severity))
+                .stream().map(bugMapper::toDto).toList();
     }
 
     public BugDto addBug(BugDto bugDto) {

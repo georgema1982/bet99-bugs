@@ -9,21 +9,44 @@
 </head>
 <body>
     <div class="container mt-5">
-        <!-- Success alert placeholder -->
-        <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert" style="display:none;">
+        <div id="successAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
             Bug added successfully!
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
+        <div id="errorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+            Failed to add bug. Please try again.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
         <h1 class="mb-4">Welcome to the Bug Tracker</h1>
-        <p class="lead">This is the home page of the Bug Tracker application.</p>
 
-        <!-- Add Bug Button -->
-        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addBugModal">
-            Add Bug
-        </button>
+        <!-- Add Bug Button, Refresh Button, and Filter Button -->
+        <div class="mb-3 d-flex gap-2 align-items-center">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBugModal">
+                Add Bug
+            </button>
+            <button type="button" class="btn btn-secondary" id="refreshBugsBtn">
+                Refresh
+            </button>
+            <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse" id="filterBugsBtn">
+                Filter
+            </button>
+        </div>
 
-        <h2 class="mt-5">Recently Edited Bugs</h2>
+        <!-- Bootstrap Collapse for Filter -->
+        <div class="collapse mb-3" id="filterCollapse">
+            <div class="card card-body" style="max-width: 300px;">
+                <label for="filterSeverity" class="form-label mb-1">Filter by Severity</label>
+                <select class="form-select" id="filterSeverity">
+                    <option value="">All Severities</option>
+                    <c:forEach var="sev" items="${severities}">
+                        <option value="${sev}">${sev}</option>
+                    </c:forEach>
+                </select>
+            </div>
+        </div>
+
         <table class="table table-striped table-bordered mt-3" id="bugsTable">
             <thead class="table-dark">
                 <tr>
@@ -38,7 +61,7 @@
                 <!-- Rows will be dynamically inserted here -->
             </tbody>
             <tfoot>
-                <tr id="noBugsMsg" style="display:none;">
+                <tr id="noBugsMsg" class="d-none">
                     <td colspan="5" class="alert alert-info m-0 text-center">No recently edited bugs found.</td>
                 </tr>
             </tfoot>
@@ -78,20 +101,18 @@
                     <label for="severity" class="form-label">Severity</label>
                     <select class="form-select" id="severity" name="severity" required>
                         <option value="">Select Severity</option>
-                        <option value="LOW">LOW</option>
-                        <option value="MEDIUM">MEDIUM</option>
-                        <option value="HIGH">HIGH</option>
-                        <option value="CRITICAL">CRITICAL</option>
+                        <c:forEach var="sev" items="${severities}">
+                            <option value="${sev}">${sev}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="status" class="form-label">Status</label>
                     <select class="form-select" id="status" name="status" required>
                         <option value="">Select Status</option>
-                        <option value="OPEN">OPEN</option>
-                        <option value="IN_PROGRESS">IN_PROGRESS</option>
-                        <option value="RESOLVED">RESOLVED</option>
-                        <option value="CLOSED">CLOSED</option>
+                        <c:forEach var="stat" items="${statuses}">
+                            <option value="${stat}">${stat}</option>
+                        </c:forEach>
                     </select>
                 </div>
             </div>
@@ -119,24 +140,29 @@
         return row;
     }
 
-    function loadBugs() {
+    function loadBugs(severity) {
+        let url = '<c:url value="/api/bugs"/>';
+        if (severity) {
+            url += '?severity=' + encodeURIComponent(severity);
+        }
         $.ajax({
-            url: '<c:url value="/api/bugs"/>',
+            url: url,
             type: 'GET',
             success: function(bugs) {
                 $('#bugsTable tbody').empty();
                 if (bugs && bugs.length > 0) {
-                    $('#noBugsMsg').hide();
+                    $('#noBugsMsg').addClass('d-none');
                     bugs.forEach(function(bug) {
                         $('#bugsTable tbody').append(createBugRow(bug));
                     });
                 } else {
-                    $('#noBugsMsg').show();
+                    $('#noBugsMsg').removeClass('d-none');
                 }
             },
             error: function() {
                 $('#bugsTable tbody').empty();
-                $('#noBugsMsg').find('td').text('Failed to load bugs.').show();
+                $('#noBugsMsg').find('td').text('Failed to load bugs.');
+                $('#noBugsMsg').removeClass('d-none');
             }
         });
     }
@@ -144,6 +170,18 @@
     $(document).ready(function() {
         // Load bugs on page load
         loadBugs();
+
+        // Refresh button
+        $('#refreshBugsBtn').on('click', function() {
+            $('#filterSeverity').val('');
+            loadBugs();
+        });
+
+        // Filter by severity when dropdown changes
+        $('#filterSeverity').on('change', function() {
+            const severity = $(this).val();
+            loadBugs(severity);
+        });
 
         // Add bug form submit
         $('#addBugForm').on('submit', function(e) {
@@ -165,12 +203,30 @@
                     $('#addBugModal').modal('hide');
                     $('#addBugForm')[0].reset();
                     $('#bugsTable tbody').append(createBugRow(newBug));
-                    $('#noBugsMsg').hide();
+                    $('#noBugsMsg').addClass('d-none');
                     // Show success alert
-                    $('#successAlert').show();
+                    $('#successAlert').removeClass('d-none');
                 },
-                error: function() {
-                    alert('Failed to add bug. Please try again.');
+                error: function(xhr) {
+                    // Hide any previous error messages
+                    $('#addBugForm .is-invalid').removeClass('is-invalid');
+                    $('#addBugForm .invalid-feedback').remove();
+
+                    if (xhr.responseJSON) {
+                        // Show validation errors at corresponding fields
+                        $.each(xhr.responseJSON, function(field, message) {
+                            const $input = $('#addBugForm [name="' + field + '"]');
+                            if ($input.length) {
+                                $input.addClass('is-invalid');
+                                if ($input.next('.invalid-feedback').length === 0) {
+                                    $input.after('<div class="invalid-feedback">' + message + '</div>');
+                                }
+                            }
+                        });
+                    } else {
+                        // Show a general error alert
+                        $('#errorAlert').removeClass('d-none');
+                    }
                 }
             });
         });
