@@ -1,4 +1,4 @@
-package com.bet99.bugs;
+package com.bet99.bugs.services;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.bet99.bugs.BugService;
 import com.bet99.bugs.entities.BugEntity;
 import com.bet99.bugs.mappers.BugMapper;
 import com.bet99.bugs.models.BugDto;
@@ -36,7 +37,6 @@ public class BugServiceTest {
 
     @Test
     void testAddBug_givenValidBugDto_expectSavedBugDtoWithId() {
-        // Original DTO with null id
         BugDto bugDto = BugDto.builder()
                 .id(null)
                 .bugTitle("Test Bug")
@@ -68,7 +68,6 @@ public class BugServiceTest {
 
     @Test
     void testGetBugs_givenNoSeverity_expectAllBugsReturned() {
-        // Prepare two entities and two DTOs
         BugEntity bugEntity1 = new BugEntity();
         BugEntity bugEntity2 = new BugEntity();
 
@@ -100,7 +99,6 @@ public class BugServiceTest {
 
     @Test
     void testGetBugs_givenSeverityLow_expectOnlyLowSeverityBugsReturned() {
-        // Prepare two entities and two DTOs for the given severity
         BugEntity bugEntity1 = new BugEntity();
         BugEntity bugEntity2 = new BugEntity();
 
