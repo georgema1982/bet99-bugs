@@ -28,7 +28,7 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBugModal" title="Add Bug">
                 <i class="bi bi-plus-circle"></i>
             </button>
-            <button type="button" class="btn btn-secondary" id="refreshBugsBtn" title="Refresh">
+            <button type="button" class="btn btn-secondary" id="refreshBugsBtn" title="Reset and Refresh">
                 <i class="bi bi-arrow-clockwise"></i>
             </button>
             <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse" id="filterBugsBtn" title="Filter">

@@ -20,7 +20,6 @@ public class BugService {
     private final BugRepository bugRepository;
     private final BugMapper bugMapper;
 
-    @Autowired
     public BugService(BugRepository bugRepository, BugMapper bugMapper) {
         this.bugRepository = bugRepository;
         this.bugMapper = bugMapper;
