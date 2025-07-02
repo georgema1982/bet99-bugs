@@ -1,5 +1,5 @@
 # Use an OpenJDK base image
-FROM eclipse-temurin:17-jdk as build
+FROM eclipse-temurin:21-jdk as build
 
 # Set working directory
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # Use a Tomcat base image for deployment
-FROM tomcat:10.1-jdk17
+FROM tomcat:10.1-jdk21
 
 # Remove default webapps
 RUN rm -rf /usr/local/tomcat/webapps/*
