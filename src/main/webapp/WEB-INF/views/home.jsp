@@ -1,37 +1,39 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home Page</title>
+    <title><spring:message code="home.title" /></title>
     <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Add this in your <head> to include Bootstrap Icons CDN if not already present -->
+    <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
     <div class="container mt-5">
         <div id="successAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
-            Bug added successfully!
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <spring:message code="alert.success" />
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="<spring:message code='button.close'/>"></button>
         </div>
 
         <div id="errorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
-            Failed to add bug. Please try again.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <spring:message code="alert.error" />
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="<spring:message code='button.close'/>"></button>
         </div>
 
-        <h1 class="mb-4">Welcome to the Bug Tracker</h1>
+        <h1 class="mb-4"><spring:message code="home.heading" /></h1>
 
         <!-- Add Bug Button, Refresh Button, and Filter Button -->
         <div class="mb-3 d-flex gap-2 align-items-center">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBugModal" title="Add Bug">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBugModal" title="<spring:message code='button.addBug'/>">
                 <i class="bi bi-plus-circle"></i>
             </button>
-            <button type="button" class="btn btn-secondary" id="refreshBugsBtn" title="Reset and Refresh">
+            <button type="button" class="btn btn-secondary" id="refreshBugsBtn" title="<spring:message code='button.refresh'/>">
                 <i class="bi bi-arrow-clockwise"></i>
             </button>
-            <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse" id="filterBugsBtn" title="Filter">
+            <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse" id="filterBugsBtn" title="<spring:message code='button.filter'/>">
                 <i class="bi bi-funnel"></i>
             </button>
         </div>
@@ -39,11 +41,13 @@
         <!-- Bootstrap Collapse for Filter -->
         <div class="collapse mb-3" id="filterCollapse">
             <div class="card card-body" style="max-width: 300px;">
-                <label for="filterSeverity" class="form-label mb-1">Filter by Severity</label>
+                <label for="filterSeverity" class="form-label mb-1"><spring:message code="label.filterSeverity" /></label>
                 <select class="form-select" id="filterSeverity">
-                    <option value="">All Severities</option>
+                    <option value=""><spring:message code="option.allSeverities" /></option>
                     <c:forEach var="sev" items="${severities}">
-                        <option value="${sev}">${sev}</option>
+                        <option value="${sev}">
+                            <spring:message code="severity.${fn:toLowerCase(sev)}" />
+                        </option>
                     </c:forEach>
                 </select>
             </div>
@@ -52,11 +56,11 @@
         <table class="table table-striped table-bordered mt-3" id="bugsTable">
             <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Severity</th>
-                    <th>Status</th>
+                    <th><spring:message code="table.id" /></th>
+                    <th><spring:message code="table.title" /></th>
+                    <th><spring:message code="table.description" /></th>
+                    <th><spring:message code="table.severity" /></th>
+                    <th><spring:message code="table.status" /></th>
                 </tr>
             </thead>
             <tbody>
@@ -64,7 +68,7 @@
             </tbody>
             <tfoot>
                 <tr id="noBugsMsg" class="d-none">
-                    <td colspan="5" class="alert alert-info m-0 text-center">No recently edited bugs found.</td>
+                    <td colspan="5" class="alert alert-info m-0 text-center"><spring:message code="table.noBugs" /></td>
                 </tr>
             </tfoot>
         </table>
@@ -76,7 +80,7 @@
             <td class="bug-id"></td>
             <td class="bug-title"></td>
             <td class="bug-description"></td>
-            <td class="bug-severity"></td>
+            <td class="bug-severity" data-severity=""></td>
             <td class="bug-status"></td>
         </tr>
     </template>
@@ -87,156 +91,71 @@
         <div class="modal-content">
           <form id="addBugForm">
             <div class="modal-header">
-              <h5 class="modal-title" id="addBugModalLabel">Add New Bug</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <h5 class="modal-title" id="addBugModalLabel"><spring:message code="modal.addBugTitle" /></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<spring:message code='button.close'/>"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label for="bugTitle" class="form-label">Title</label>
+                    <label for="bugTitle" class="form-label"><spring:message code="label.title" /></label>
                     <input type="text" class="form-control" id="bugTitle" name="bugTitle" required>
                 </div>
                 <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
+                    <label for="description" class="form-label"><spring:message code="label.description" /></label>
                     <textarea class="form-control" id="description" name="description" required></textarea>
                 </div>
                 <div class="mb-3">
-                    <label for="severity" class="form-label">Severity</label>
+                    <label for="severity" class="form-label"><spring:message code="label.severity" /></label>
                     <select class="form-select" id="severity" name="severity" required>
-                        <option value="">Select Severity</option>
+                        <option value=""><spring:message code="option.selectSeverity" /></option>
                         <c:forEach var="sev" items="${severities}">
-                            <option value="${sev}">${sev}</option>
+                            <option value="${sev}">
+                                <spring:message code="severity.${fn:toLowerCase(sev)}" />
+                            </option>
                         </c:forEach>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="status" class="form-label">Status</label>
+                    <label for="status" class="form-label"><spring:message code="label.status" /></label>
                     <select class="form-select" id="status" name="status" required>
-                        <option value="">Select Status</option>
+                        <option value=""><spring:message code="option.selectStatus" /></option>
                         <c:forEach var="stat" items="${statuses}">
-                            <option value="${stat}">${stat}</option>
+                            <option value="${stat}">
+                                <spring:message code="status.${fn:toLowerCase(stat)}" />
+                            </option>
                         </c:forEach>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-primary">Add Bug</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><spring:message code="button.cancel" /></button>
+              <button type="submit" class="btn btn-primary"><spring:message code="button.addBug" /></button>
             </div>
           </form>
         </div>
       </div>
     </div>
 
+    <!-- Hidden severity messages for localization -->
+    <div id="severity-messages" class="d-none">
+        <c:forEach var="sev" items="${severities}">
+            <span data-key="severity.${fn:toLowerCase(sev)}">
+                <spring:message code="severity.${fn:toLowerCase(sev)}"/>
+            </span>
+        </c:forEach>
+    </div>
+
+    <!-- Hidden status messages for localization -->
+    <div id="status-messages" class="d-none">
+        <c:forEach var="stat" items="${statuses}">
+            <span data-key="status.${fn:toLowerCase(stat)}">
+                <spring:message code="status.${fn:toLowerCase(stat)}"/>
+            </span>
+        </c:forEach>
+    </div>
+
     <!-- Bootstrap JS Bundle CDN (optional, for interactive components) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Add jQuery CDN for AJAX (if not already included) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script>
-    function createBugRow(bug) {
-        const row = $($('#bugRowTemplate').prop('content')).clone();
-        row.find('.bug-id').text(bug.id ? bug.id : '');
-        row.find('.bug-title').text(bug.bugTitle);
-        row.find('.bug-description').text(bug.description);
-        row.find('.bug-severity').text(bug.severity);
-        row.find('.bug-status').text(bug.status);
-        return row;
-    }
-
-    function loadBugs(severity) {
-        let url = '<c:url value="/api/bugs"/>';
-        if (severity) {
-            url += '?severity=' + encodeURIComponent(severity);
-        }
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(bugs) {
-                $('#bugsTable tbody').empty();
-                if (bugs && bugs.length > 0) {
-                    $('#noBugsMsg').addClass('d-none');
-                    bugs.forEach(function(bug) {
-                        $('#bugsTable tbody').append(createBugRow(bug));
-                    });
-                } else {
-                    $('#noBugsMsg').removeClass('d-none');
-                }
-            },
-            error: function() {
-                $('#bugsTable tbody').empty();
-                $('#noBugsMsg').find('td').text('Failed to load bugs.');
-                $('#noBugsMsg').removeClass('d-none');
-            }
-        });
-    }
-
-    $(document).ready(function() {
-        // Load bugs on page load
-        loadBugs();
-
-        // Refresh button
-        $('#refreshBugsBtn').on('click', function() {
-            $('#filterSeverity').val('');
-            loadBugs();
-            // Hide the filter collapse if open
-            $('#filterCollapse').collapse('hide');
-        });
-
-        // Filter by severity when dropdown changes
-        $('#filterSeverity').on('change', function() {
-            const severity = $(this).val();
-            loadBugs(severity);
-            // Hide the filter collapse after selection
-            $('#filterCollapse').collapse('hide');
-        });
-
-        // Add bug form submit
-        $('#addBugForm').on('submit', function(e) {
-            e.preventDefault();
-
-            const bugData = {
-                bugTitle: $('#bugTitle').val(),
-                description: $('#description').val(),
-                severity: $('#severity').val(),
-                status: $('#status').val()
-            };
-
-            $.ajax({
-                url: '<c:url value="/api/bugs"/>',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(bugData),
-                success: function(newBug) {
-                    $('#addBugModal').modal('hide');
-                    $('#addBugForm')[0].reset();
-                    $('#bugsTable tbody').append(createBugRow(newBug));
-                    $('#noBugsMsg').addClass('d-none');
-                    // Show success alert
-                    $('#successAlert').removeClass('d-none');
-                },
-                error: function(xhr) {
-                    // Hide any previous error messages
-                    $('#addBugForm .is-invalid').removeClass('is-invalid');
-                    $('#addBugForm .invalid-feedback').remove();
-
-                    if (xhr.responseJSON) {
-                        // Show validation errors at corresponding fields
-                        $.each(xhr.responseJSON, function(field, message) {
-                            const $input = $('#addBugForm [name="' + field + '"]');
-                            if ($input.length) {
-                                $input.addClass('is-invalid');
-                                if ($input.next('.invalid-feedback').length === 0) {
-                                    $input.after('<div class="invalid-feedback">' + message + '</div>');
-                                }
-                            }
-                        });
-                    } else {
-                        // Show a general error alert
-                        $('#errorAlert').removeClass('d-none');
-                    }
-                }
-            });
-        });
-    });
-    </script>
+    <script src="<c:url value='/js/bugs.js'/>"></script>
 </body>
 </html>

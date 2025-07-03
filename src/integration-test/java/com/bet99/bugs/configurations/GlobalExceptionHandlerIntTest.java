@@ -42,7 +42,6 @@ public class GlobalExceptionHandlerIntTest {
 
     @Test
     void testHandleValidationExceptions_givenInvalidBugDto_expectValidationErrorsInResponse() throws Exception {
-        // Create a BugDto with missing required fields (e.g., no title, no description)
         BugDto invalidBug = BugDto.builder().build();
 
         mockMvc.perform(post("/api/bugs")
@@ -51,6 +50,8 @@ public class GlobalExceptionHandlerIntTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.bugTitle").exists())
-                .andExpect(jsonPath("$.description").exists());
+                .andExpect(jsonPath("$.description").exists())
+                .andExpect(jsonPath("$.severity").exists())
+                .andExpect(jsonPath("$.status").exists());
     }
 }
